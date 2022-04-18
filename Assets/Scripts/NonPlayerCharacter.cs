@@ -7,6 +7,8 @@ public class NonPlayerCharacter : MonoBehaviour
     public float displayTime = 4.0f;
     public GameObject dialogBox;
     float timerDisplay;
+    public AudioClip talkClip;
+    public AudioSource talkSource;
     
     void Start()
     {
@@ -29,6 +31,7 @@ public class NonPlayerCharacter : MonoBehaviour
     public void DisplayDialog()
     {
         timerDisplay = displayTime;
+        talkSource.PlayOneShot(talkClip);
         dialogBox.SetActive(true);
     }
 }

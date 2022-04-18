@@ -10,10 +10,12 @@ public class RubyController : MonoBehaviour
     public int maxHealth = 5;
     private int scoreValue = 0;
     public int cogs = 5;
+    public int spells = 0;
 
     bool gameOver;
 
     public Text fixedText;
+    public Text spellText;
     public GameObject winTextObject;
     public GameObject nextLevelTextObject;
     public GameObject loseTextObject;
@@ -48,6 +50,7 @@ public class RubyController : MonoBehaviour
     AudioSource audioSource;
 
     public static int level = 1;
+    public static int damageTaken = 0;
     
     // Start is called before the first frame update
     void Start()
@@ -65,6 +68,8 @@ public class RubyController : MonoBehaviour
 
         fixedText.text = "Fixed Robots: " + scoreValue.ToString();
         cogsText.text = "Cogs: " + cogs.ToString();
+
+        musicSource.Play();
 
         gameOver = false;
     }
@@ -117,18 +122,34 @@ public class RubyController : MonoBehaviour
                         character.DisplayDialog();
                     }
                 }
-                else
+
+                else if(scoreValue < 5 && level == 2)
                 {
                     NonPlayerCharacter character = hit.collider.GetComponent<NonPlayerCharacter>();
                     if (character != null)
                     {
+                        character.DisplayDialog();
+                    }
+                }
+
+                else
+                {
+                    NonPlayerCharacter character = hit.collider.GetComponent<NonPlayerCharacter>();
+                    if (character.tag == "NPC" && scoreValue >= 5)
+                    {
+                    if (character != null)
+                    {
                          SceneManager.LoadScene("Main2");
+                         level = 2;
+                         spellText.text = "Spells: " + spells.ToString();
+                    }
                     }
                 }
             }
+            Debug.Log("The static level is at " + level);
         }
 
-        if (scoreValue >= 5 && level == 3)
+        if (scoreValue >= 5 && level == 2 && spells == 4)
         {
             // Set the text value of your 'winText'
             winTextObject.SetActive(true);
@@ -145,19 +166,12 @@ public class RubyController : MonoBehaviour
             // Set the text value of your 'winText'
             gameOver = false;
             nextLevelTextObject.SetActive(true);
-            Destroy(nextLevelTextObject, 3.0f);
+            Destroy(nextLevelTextObject, 3.0f);  
 
-            //Play victory sound
-            PlaySound(winSound);
-            level = 2;
+            PlaySound(winSound); 
         }
 
-        if(scoreValue < 5 && level == 2)
-        {
-            level = 3;
-        }
-
-        if (currentHealth == 0)
+        if (currentHealth <= 0)
         {
             // Set the text value of your 'winText'
             loseTextObject.SetActive(true);
@@ -207,6 +221,8 @@ public class RubyController : MonoBehaviour
             
             animator.SetTrigger("Hit");
             PlaySound(hitSound);
+            damageTaken += 1;
+            Debug.Log("Damage Taken is " + damageTaken);
         }
         if (amount > 0)
         {
@@ -230,6 +246,17 @@ public class RubyController : MonoBehaviour
         cogsText.text = "Cogs: " + cogs.ToString();
     }
     
+    public void ChangeSpell()
+    { 
+        spells += 1;
+        spellText.text = "Spells: " + spells.ToString();
+    }
+
+    public void ChangeSpeed()
+    { 
+        speed = 5.0f;
+    }
+
     void Launch()
     {
         GameObject projectileObject = Instantiate(projectilePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);

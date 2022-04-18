@@ -16,7 +16,6 @@ public class CogCollectible : MonoBehaviour
                 Destroy(gameObject);
             
                 controller.PlaySound(collectedClip);
-            }
         }
-
     }
+}
